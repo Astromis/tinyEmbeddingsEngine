@@ -1,41 +1,22 @@
-#include "word2vec.hpp"
+//  Copyright 2013 Google Inc. All Rights Reserved.
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 
-Word2Vec::Word2Vec(char* _train_file)
-{
-    strcpy(train_file, _train_file);
-    word2vecStandartInit();
-}
+#pragma hdrstop
+#include "word2vec.h"
+#pragma package(smart_init)
 
-Word2Vec::~Word2Vec()
-{
-    free((void*)syn0);
-    // It is unknown but it seems that the free invokes somewhere else previously
-    //free((void*)syn1);
-    free((void*)syn1neg);
-    free((void*)expTable);
-    free(vocab);
-}
-
-
-void Word2Vec::GetVocab(vector<string> &vocabulary)
-{
-    vocabulary.resize(vocab_size);
-    for(long long i=0; i < vocab_size; i++)
-      vocabulary.push_back(string(vocab[i].word));
-}
-
-void Word2Vec::GetEmbeddingMatrix(MatrixXf &Embeddings)
-{
-    //MatrixXf embed(vocab_size, layer1_size);
-    Embeddings.resize(vocab_size, layer1_size);
-    for (long long a = 0; a < vocab_size; a++)
-            for (long long b = 0; b < layer1_size; b++)
-                Embeddings(a, b) = syn0[a * layer1_size + b];
-    cout<<Embeddings.rows()<<endl;
-    cout<<Embeddings.cols()<<endl;
-}
-
-void Word2Vec::InitUnigramTable() {
+void InitUnigramTable() {
   int a, i;
   double train_words_pow = 0;
   double d1, power = 0.75;
@@ -54,7 +35,7 @@ void Word2Vec::InitUnigramTable() {
 }
 
 // Reads a single word from a file, assuming space + tab + EOL to be word boundaries
-void Word2Vec::ReadWord(char *word, FILE *fin) {
+void ReadWord(char *word, FILE *fin) {
   int a = 0, ch;
   while (!feof(fin)) {
     ch = fgetc(fin);
@@ -77,7 +58,7 @@ void Word2Vec::ReadWord(char *word, FILE *fin) {
 }
 
 // Returns hash value of a word
-int Word2Vec::GetWordHash(char *word) {
+int GetWordHash(char *word) {
   unsigned long long a, hash = 0;
   for (a = 0; a < strlen(word); a++) hash = hash * 257 + word[a];
   hash = hash % vocab_hash_size;
@@ -85,7 +66,7 @@ int Word2Vec::GetWordHash(char *word) {
 }
 
 // Returns position of a word in the vocabulary; if the word is not found, returns -1
-int Word2Vec::SearchVocab(char *word) {
+int SearchVocab(char *word) {
   unsigned int hash = GetWordHash(word);
   while (1) {
     if (vocab_hash[hash] == -1) return -1;
@@ -96,7 +77,7 @@ int Word2Vec::SearchVocab(char *word) {
 }
 
 // Reads a word and returns its index in the vocabulary
-int Word2Vec::ReadWordIndex(FILE *fin) {
+int ReadWordIndex(FILE *fin) {
   char word[MAX_STRING];
   ReadWord(word, fin);
   if (feof(fin)) return -1;
@@ -104,7 +85,7 @@ int Word2Vec::ReadWordIndex(FILE *fin) {
 }
 
 // Adds a word to the vocabulary
-int Word2Vec::AddWordToVocab(char *word) {
+int AddWordToVocab(char *word) {
   unsigned int hash, length = strlen(word) + 1;
   if (length > MAX_STRING) length = MAX_STRING;
   vocab[vocab_size].word = (char *)calloc(length, sizeof(char));
@@ -128,7 +109,7 @@ int VocabCompare(const void *a, const void *b) {
 }
 
 // Sorts the vocabulary by frequency using word counts
-void Word2Vec::SortVocab() {
+void SortVocab() {
   int a, size;
   unsigned int hash;
   // Sort the vocabulary and keep </s> at the first position
@@ -158,7 +139,7 @@ void Word2Vec::SortVocab() {
 }
 
 // Reduces the vocabulary by removing infrequent tokens
-void Word2Vec::ReduceVocab() {
+void ReduceVocab() {
   int a, b = 0;
   unsigned int hash;
   for (a = 0; a < vocab_size; a++) if (vocab[a].cn > min_reduce) {
@@ -180,7 +161,7 @@ void Word2Vec::ReduceVocab() {
 
 // Create binary Huffman tree using the word counts
 // Frequent words will have short uniqe binary codes
-void Word2Vec::CreateBinaryTree() {
+void CreateBinaryTree() {
   long long a, b, i, min1i, min2i, pos1, pos2, point[MAX_CODE_LENGTH];
   char code[MAX_CODE_LENGTH];
   long long *count = (long long *)calloc(vocab_size * 2 + 1, sizeof(long long));
@@ -245,7 +226,7 @@ void Word2Vec::CreateBinaryTree() {
   free(parent_node);
 }
 
-void Word2Vec::LearnVocabFromTrainFile() {
+void LearnVocabFromTrainFile() {
   char word[MAX_STRING];
   FILE *fin;
   long long a, i;
@@ -281,7 +262,7 @@ void Word2Vec::LearnVocabFromTrainFile() {
   fclose(fin);
 }
 
-void Word2Vec::SaveVocab(char * save_vocab_file) {
+void SaveVocab(char * save_vocab_file) {
   long long i;
   FILE *fo = fopen(save_vocab_file, "wb");
   for (i = 0; i < vocab_size; i++) fprintf(fo, "%s %lld\n", vocab[i].word, vocab[i].cn);
@@ -289,7 +270,7 @@ void Word2Vec::SaveVocab(char * save_vocab_file) {
 
 }
 
-void Word2Vec::ReadVocab(char * read_vocab_file) {
+void ReadVocab(char * read_vocab_file) {
   long long a, i = 0;
   char c;
   char word[MAX_STRING];
@@ -323,7 +304,7 @@ void Word2Vec::ReadVocab(char * read_vocab_file) {
   read_vocab_flag = true;
 }
 
-void Word2Vec::InitNet() {
+void InitNet() {
   long long a, b;
   unsigned long long next_random = 1;
   a = posix_memalign((void **)&syn0, 128, (long long)vocab_size * layer1_size * sizeof(float));
@@ -347,7 +328,7 @@ void Word2Vec::InitNet() {
   CreateBinaryTree();
 }
 
-void Word2Vec::TrainModelThread(int id){
+void *TrainModelThread(void *id) {
   long long a, b, d, cw, word, last_word, sentence_length = 0, sentence_position = 0;
   long long word_count = 0, last_word_count = 0, sen[MAX_SENTENCE_LENGTH + 1];
   long long l1, l2, c, target, label, local_iter = iter;
@@ -529,9 +510,10 @@ void Word2Vec::TrainModelThread(int id){
   pthread_exit(NULL);
 }
 
-void Word2Vec::TrainModel() {
+MatrixXf TrainModel() {
   
   long a, b;//c, d;
+  pthread_t *pt = (pthread_t *)malloc(num_threads * sizeof(pthread_t));
   printf("Starting training using file %s\n", train_file);
   starting_alpha = alpha;
   if(read_vocab_flag == false)
@@ -541,9 +523,16 @@ void Word2Vec::TrainModel() {
   InitNet();
   if (negative > 0) InitUnigramTable();
   start = clock();
-  std::vector<std::thread> threads;
-  for(int i=0; i < num_threads; i++) threads.push_back(std::thread([=](){TrainModelThread(i);}));
-  for(int i=0; i < num_threads; i++) threads[i].join();
+  for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void *)a);
+  for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
+    //NOW IN THIS PLCAE CREATING MATRIX WITH WORD EMBEDDINGS
+    MatrixXf embed(vocab_size, layer1_size);
+    for (a = 0; a < vocab_size; a++)
+            for (b = 0; b < layer1_size; b++)
+                embed(a, b) = syn0[a * layer1_size + b];
+    cout<<embed.rows()<<endl;
+    cout<<embed.cols()<<endl;
+    return embed;
 
   /*} else {
     // Run K-means on the word vectors
@@ -593,7 +582,7 @@ void Word2Vec::TrainModel() {
 }
 
 
-/* void Word2Vec::word2vecInit(char* _train_file, long long size, int model_mode, float alp, int win,
+void word2vecInit(char* _train_file, long long size, int model_mode, float alp, int win,
                   float samp, int _hs, int neg, int num_thr, long long _iter,
                   int min_co, long long _classes)
 {
@@ -617,11 +606,11 @@ void Word2Vec::TrainModel() {
             expTable[i] = exp((i / (float)EXP_TABLE_SIZE * 2 - 1) * MAX_EXP); // Precompute the exp() table
             expTable[i] = expTable[i] / (expTable[i] + 1);                   // Precompute f(x) = x / (x + 1)
         }
-} */
+}
 
-void Word2Vec::word2vecStandartInit()
+void word2vecStandartInit(char* _train_file)
 {
-    //strcpy(train_file, _train_file);
+    strcpy(train_file, _train_file);
     cout<<train_file;
     vocab = (struct vocab_word *)calloc(vocab_max_size, sizeof(struct vocab_word));
     vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
@@ -635,10 +624,10 @@ void Word2Vec::word2vecStandartInit()
 
 
 
-void Word2Vec::clear_mem()
+void clear_mem()
 {
     free((void*)syn0);
-    //free((void*)syn1);
+    free((void*)syn1);
     free((void*)syn1neg);
     free((void*)expTable);
     free(vocab);
