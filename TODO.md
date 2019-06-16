@@ -1,4 +1,4 @@
-[ ] Get rid of global variables
+[x] Get rid of global variables
 [ ] Create a structure that can control these vectors:
     [ ] Cosine similarity
     [ ] Construct SIF embeddigns
