@@ -1,6 +1,9 @@
-[x] Get rid of global variables
-[ ] Create a structure that can control these vectors:
-    [ ] Cosine similarity
-    [ ] Construct SIF embeddigns
-    [ ] Return the most similar words
-    [ ] Perform clustering
+- [x] Get rid of global variables in Word2Vec
+- [ ] Make an interface for various models
+- [ ] Create a structure that can control these vectors:
+    - [ ] Cosine similarity (1st order)
+    - [ ] Return the most similar words (1st order)
+    - [ ] It should have the union standard of vocabulary storing (word2vec and vec2word) (1st order at least one method)
+    - [ ] A storing schemme for fast searchind of nearest neigbour 
+    - [ ] Construct SIF embeddigns or other techniques for constructing sentence embeddgins
+    - [ ] Perform clustering
