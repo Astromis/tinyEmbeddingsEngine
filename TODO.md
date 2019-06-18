@@ -3,7 +3,7 @@
 - [ ] Saving and loading
     - [x] Saving and loading matrix
     - [ ] Saving and loading vocabulary
-- [ ] Create a structure that can control these vectors:
+- [x] Create a structure that can control these vectors:
     - [ ] Cosine similarity (1st order)
     - [ ] Return the most similar words (1st order)
     - [x] It should have the union standard of vocabulary storing (word2vec and vec2word) (1st order at least one method)

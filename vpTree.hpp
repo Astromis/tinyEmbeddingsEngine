@@ -2,6 +2,8 @@
 // Released to the Public Domain
 // http://stevehanov.ca/blog/?id=130
 // Based on "Data Structures and Algorithms for Nearest Neighbor Search" by Peter N. Yianilos
+// See the exapmle of using at the end of file
+
 #include <stdlib.h>
 #include <algorithm>
 #include <vector>
@@ -19,18 +21,18 @@ public:
         delete _root;
     }
 
-    void create( const std::vector& items ) {
+    void create( const std::vector<T>& items ) {
         delete _root;
         _items = items;
         _root = buildFromPoints(0, items.size());
     }
 
-    void search( const T& target, int k, std::vector* results, 
+    void search( const T& target, int k, std::vector<T>* results, 
         std::vector<double>* distances) 
     {
         std::priority_queue<HeapItem> heap;
 
-        _tau = std::numeric_limits::max();
+        _tau = std::numeric_limits<double>::max();
         search( _root, target, k, heap );
 
         results->clear(); distances->clear();
@@ -120,7 +122,7 @@ private:
     }
 
     void search( Node* node, const T& target, int k,
-                 std::priority_queue& heap )
+                 std::priority_queue<HeapItem>& heap )
     {
         if ( node == NULL ) return;
 
@@ -157,3 +159,44 @@ private:
         }
     }
 };
+
+
+/* 
+struct point
+{
+    float x;
+    float y;
+};
+
+double euc_dist(const point& a, const point& b)
+{
+    return sqrt( pow( (a.x - b.x) , 2) + pow( (a.y - b.y) , 2));
+}
+int main(int argc, char* argv[])
+{
+    VpTree<point, euc_dist> tree;
+    std::vector<point> test(5);
+    for(int i = 0; i < test.size(); i++)
+    {
+        test[i].x = (float)(rand() % 11);
+        test[i].y = (float)(rand() % 11);
+    }
+    for(auto i: test)
+    {
+        std::cout<<i.x<<" "<<i.y<<std::endl;
+    }
+    std::cout<<"Creating the tree"<<std::endl;
+    tree.create(test);
+    std::vector<point> res;
+    std::vector<double> dists;
+    point test_p;
+    test_p.x = 0;
+    test_p.y = 0;
+    tree.search(test_p, 2, &res, &dists);
+    for(auto i: res)
+    {
+        std::cout<<i.x<<" "<<i.y<<std::endl;
+    }
+    return 0;
+}
+ */
