@@ -4,12 +4,17 @@
 // Based on "Data Structures and Algorithms for Nearest Neighbor Search" by Peter N. Yianilos
 // See the exapmle of using at the end of file
 
+#ifndef _VPTREE_H
+#define _VPTREE_H
+
 #include <stdlib.h>
 #include <algorithm>
 #include <vector>
 #include <stdio.h>
 #include <queue>
 #include <limits>
+#include <iostream> 
+using namespace std;
 
 template<typename T, double (*distance)( const T&, const T& )>
 class VpTree
@@ -24,6 +29,7 @@ public:
     void create( const std::vector<T>& items ) {
         delete _root;
         _items = items;
+        cout<<"Size of items is "<<_items.size()<<endl;
         _root = buildFromPoints(0, items.size());
     }
 
@@ -160,7 +166,7 @@ private:
     }
 };
 
-
+#endif
 /* 
 struct point
 {

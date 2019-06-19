@@ -47,8 +47,8 @@ class Word2Vec: public IEmbeddingModel
 
     //adjustable params
     char train_file[MAX_STRING];
-    int cbow = 1, debug_mode = 2, window = 5, min_count = 1, num_threads = 12, min_reduce = 1;
-    long long vocab_max_size = 1000, layer1_size = 16;
+    int cbow = 1, debug_mode = 2, window = 5, min_count = 1, num_threads = 10, min_reduce = 1;
+    long long vocab_max_size = 100000, layer1_size = 50;
     long long train_words = 0, word_count_actual = 0, iter = 1, file_size = 0, classes = 0;
     float alpha = 0.025, sample = 1e-3;
     int hs = 0, negative = 5;
@@ -80,6 +80,7 @@ class Word2Vec: public IEmbeddingModel
 
     void GetVocab(vector<string> &vocabulary) override;
     void GetEmbeddingMatrix(MatrixXf &Embeddings) override;
+    void GetEmbeddingMatrix(vector<VectorXf> &Embeddings) override;
 
     void clear_mem();
     void word2vecStandartInit();    

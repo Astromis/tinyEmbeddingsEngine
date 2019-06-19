@@ -21,7 +21,7 @@ void Word2Vec::GetVocab(vector<string> &vocabulary)
 {
     vocabulary.resize(vocab_size);
     for(long long i=0; i < vocab_size; i++)
-      vocabulary.push_back(string(vocab[i].word));
+      vocabulary[i] = string(vocab[i].word);
 }
 
 void Word2Vec::GetEmbeddingMatrix(MatrixXf &Embeddings)
@@ -35,6 +35,18 @@ void Word2Vec::GetEmbeddingMatrix(MatrixXf &Embeddings)
     cout<<Embeddings.cols()<<endl;
 }
 
+void Word2Vec::GetEmbeddingMatrix(vector<VectorXf> &Embeddings)
+{
+    Embeddings.resize(vocab_size);
+    for (long long a = 0; a < vocab_size; a++)
+    {
+        VectorXf tmp(layer1_size);
+        for (long long b = 0; b < layer1_size; b++)
+            tmp(b) = syn0[a * layer1_size + b];
+        Embeddings[a] = tmp;
+    }
+    cout<<"The size of vector is "<<Embeddings.size()<<endl;
+}
 void Word2Vec::InitUnigramTable() {
   int a, i;
   double train_words_pow = 0;

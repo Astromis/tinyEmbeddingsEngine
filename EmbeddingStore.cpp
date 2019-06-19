@@ -1,14 +1,52 @@
 #include "EmbeddingStore.hpp"
+#include <algorithm>
+
+
+
 
 EmbeddingStore::EmbeddingStore(IEmbeddingModel &model)
 {
     model.GetVocab(vocab);
-    model.GetEmbeddingMatrix(Embeddings);
+    
+    model.GetEmbeddingMatrix(vectors);
+/*     for(int i=0; i < vectors.size(); i++)
+    {
+        w2v[vocab[i]] = vectors[i];
+    }
+
+    for(int i=0; i < vectors.size(); i++)
+    {
+        v2w[vectors[i]] = vocab[i];
+    } */
+
+    EmbeddingTree.create(vectors);
+    //model.GetEmbeddingMatrix(Embeddings);
 };
 
 EmbeddingStore::~EmbeddingStore()
 {
 
+}
+
+string EmbeddingStore::find_nierest(string word)
+{
+    /* cout<<vocab.size()<<endl;
+    for(auto& i:vocab)
+    {
+        cout<<i<<endl;
+    } */
+
+    int vocab_index = std::distance(vocab.begin(),
+                                    find(vocab.begin(), vocab.end(), word));
+    // don't forget to handle the mismatch
+    cout<<vocab_index<<endl;
+    vector<VectorXf> res;
+    std::vector<double> dists;
+    EmbeddingTree.search(vectors[vocab_index], 2, &res, &dists);
+    int vector_index = std::distance(vectors.begin(),
+                                    find(vectors.begin(), vectors.end(), res[1]));
+
+    return vocab[vector_index];
 }
 
 
@@ -69,3 +107,4 @@ void EmbeddingStore::writeMatrix(const char *filename, MatrixXd mat)
     outdata.close();
     
 }
+

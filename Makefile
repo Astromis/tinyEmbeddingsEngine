@@ -1,6 +1,6 @@
 all: w2v
 
-w2v: w2v.o main.o EmbeddingStore.o
+w2v: w2v.o main.o EmbeddingStore.o vpTree.o
 	g++ w2v.o main.o EmbeddingStore.o -lpthread -o w2v -std=c++11 -g
 
 w2v.o: word2vec.cpp
@@ -11,6 +11,9 @@ EmbeddingStore.o: EmbeddingStore.cpp
 
 main.o: main.cpp
 	g++ main.cpp -c -I /usr/include/eigen3/ -o main.o -std=c++11 -g
+
+vpTree.o: vpTree.hpp
+	g++ vpTree.hpp -c -I /usr/include/eigen3/ -o vpTree.o -std=c++11 -g
 
 clean:
 	rm -rf *.o w2v
