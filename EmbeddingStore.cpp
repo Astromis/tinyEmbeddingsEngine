@@ -35,7 +35,7 @@ string EmbeddingStore::find_nierest(string word)
     {
         cout<<i<<endl;
     } */
-
+    // I'm not sure that the distance is faster than linear search
     int vocab_index = std::distance(vocab.begin(),
                                     find(vocab.begin(), vocab.end(), word));
     // don't forget to handle the mismatch
@@ -49,7 +49,33 @@ string EmbeddingStore::find_nierest(string word)
     return vocab[vector_index];
 }
 
+void EmbeddingStore::find_k_nierest(string word, int k, 
+                                    vector<string>& results, vector<double>& dists)
+{
 
+    // I'm not sure that the distance is faster than linear search
+    int vocab_index = std::distance(vocab.begin(),
+                                    find(vocab.begin(), vocab.end(), word));
+    // don't forget to handle the mismatch
+    cout<<vocab_index<<endl;
+    vector<VectorXf> res;
+    EmbeddingTree.search(vectors[vocab_index], k, &res, &dists);
+    for(int i=1; i < k; i++)
+    {
+        int vector_index = std::distance(vectors.begin(),
+                                        find(vectors.begin(), vectors.end(), res[i]));
+        results.push_back(vocab[vector_index]);
+    }   
+}
+
+void EmbeddingStore::dbscan(float eps, int minPts)
+{
+    int cluster_num = 0;
+    for(auto word_vector: vectors)
+    {
+        
+    }
+}
 MatrixXd EmbeddingStore::readMatrix(const char *filename)
 {
     std::ifstream indata;

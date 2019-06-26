@@ -15,11 +15,19 @@ int main(int argc, char* argv[])
     EmbeddingStore storage(model);
     //model.clear_mem();
     string test;
+
     while(1)
     {
         cout<<"Enter the word for search: ";
         cin>>test;
-        cout<<storage.find_nierest(test);
+        vector<string> ans;
+        vector<double> dists;
+        storage.find_k_nierest(test, 3, ans, dists);
+        for(auto i: ans)
+        {
+            cout<<i<<endl;
+        }
     }
+
     return 0;
 }

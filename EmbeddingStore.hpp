@@ -57,8 +57,10 @@ class EmbeddingStore
     EmbeddingStore(IEmbeddingModel &model);
     MatrixXd readMatrix(const char *filename);
     void writeMatrix(const char *filename, MatrixXd mat);
+    void find_k_nierest(string word, int k, 
+                       vector<string>& results, vector<double>& dists);
 
-
+    void dbscan(float eps, int minPts);
     float similarity();
     string find_nierest(string word);
 };
