@@ -11,7 +11,7 @@
 #include "IEmbeddingModel.hpp"
 #include "vpTree.hpp"
 #include "math.h"
-#include <unordered_map>
+#include <map>
 
 
 using namespace std;
@@ -44,14 +44,14 @@ class EmbeddingStore
         //Am I sure that here should be a vector?
         vector<string> vocab;
         vector<VectorXf> vectors;
-        //unordered_map<string, VectorXf> w2v;
+        map<string, int> word2index;
         //unordered_map<VectorXf, string> v2w;
         MatrixXf Embeddings;
         VpTree<VectorXf, eucl_dist> EmbeddingTree;
 
   
     public:
-
+    VectorXf operator[](string word);
     EmbeddingStore();
     ~EmbeddingStore();
     EmbeddingStore(IEmbeddingModel &model);
@@ -62,6 +62,8 @@ class EmbeddingStore
 
     void dbscan(float eps, int minPts);
     float similarity();
+
+    VectorXf get_sif(string sentence, map<string, int> tf, float alpha);
     string find_nierest(string word);
 };
 

@@ -7,19 +7,14 @@
 EmbeddingStore::EmbeddingStore(IEmbeddingModel &model)
 {
     model.GetVocab(vocab);
-    
     model.GetEmbeddingMatrix(vectors);
-/*     for(int i=0; i < vectors.size(); i++)
-    {
-        w2v[vocab[i]] = vectors[i];
-    }
-
-    for(int i=0; i < vectors.size(); i++)
-    {
-        v2w[vectors[i]] = vocab[i];
-    } */
 
     EmbeddingTree.create(vectors);
+
+    for(int i=0; i < vocab.size(); i++)
+    {
+        word2index[vocab[i]] = i;
+    }
     //model.GetEmbeddingMatrix(Embeddings);
 };
 
@@ -28,13 +23,14 @@ EmbeddingStore::~EmbeddingStore()
 
 }
 
+/**
+ * @brief find the nierest word
+ * word [in] word the neighbour to be founded
+ * @return the nierest word 
+ */
 string EmbeddingStore::find_nierest(string word)
 {
-    /* cout<<vocab.size()<<endl;
-    for(auto& i:vocab)
-    {
-        cout<<i<<endl;
-    } */
+
     // I'm not sure that the distance is faster than linear search
     int vocab_index = std::distance(vocab.begin(),
                                     find(vocab.begin(), vocab.end(), word));
@@ -49,6 +45,14 @@ string EmbeddingStore::find_nierest(string word)
     return vocab[vector_index];
 }
 
+/**
+ * @brief find k the nierest words
+ * word [in] word the neighbour to be founded
+ * k [in] the number of neighbours
+ * results [out] vector with the nierest words
+ * dists [out] vecotr with distances from word to its neighbours
+ *  
+ */
 void EmbeddingStore::find_k_nierest(string word, int k, 
                                     vector<string>& results, vector<double>& dists)
 {
@@ -76,6 +80,8 @@ void EmbeddingStore::dbscan(float eps, int minPts)
         
     }
 }
+
+
 MatrixXd EmbeddingStore::readMatrix(const char *filename)
 {
     std::ifstream indata;
@@ -134,3 +140,37 @@ void EmbeddingStore::writeMatrix(const char *filename, MatrixXd mat)
     
 }
 
+
+VectorXf EmbeddingStore::operator[](string word)
+{
+    int idx = word2index[word];
+    return vectors[idx];
+}
+
+/**
+ * @brief Compute the SIF embeddings for piece of text (sentence, in general)
+ * sentence [in] sentence to which embedding need to compute
+ * wf [in] term frequency table
+ * alpga [in] hyperparameter of smoothing, typicall range is [3e-5, 3e-3]
+ * @return vector of piece of text 
+ */
+VectorXf EmbeddingStore::get_sif(string sentence, map<string, int> tf, float alpha)
+{
+    // this method need to be optimzed
+    vector<string> result;
+    istringstream iss(sentence);
+    for(string s; iss >> s; )
+        result.push_back(s);
+    vector<VectorXf> vects;
+    VectorXf res;
+    for(string s:result)
+    {
+        vects.push_back(vectors[ word2index[s] ] * ((float)alpha / ( (float)alpha + tf[s]) ));
+    }
+    res = vects[vects.size()];
+    vects.pop_back();
+    for(int i=0; i< vects.size(); i++) res = res + vects[i];
+
+    res = res / (vects.size() + 1);
+    return res;
+}

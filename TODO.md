@@ -3,12 +3,14 @@
 - [ ] Saving and loading
     - [x] Saving and loading matrix
     - [ ] Saving and loading vocabulary
+    - [ ] Saving and loading vector of VectorXfs
 - [x] Create a structure that can control these vectors:
     - [x] Cosine similarity (1st order)
     - [x] Return the most similar words (1st order)
     - [x] It should have the union standard of vocabulary storing (word2vec and vec2word) (1st order at least one method)
     - [x] A storing schemme for fast searchind of nearest neigbour 
-    - [ ] Construct SIF embeddigns or other techniques for constructing sentence embeddgins
+    - [x] Construct SIF embeddigns or other techniques for constructing sentence embeddgins
     - [ ] Perform clustering
 
 - [x] make an interface class for models
+- [ ] Test the SIF embeddings

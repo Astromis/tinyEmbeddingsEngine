@@ -9,6 +9,12 @@
 
 int main(int argc, char* argv[])
 {
+    if(argc <= 1)
+    {
+        cout<<"Data file was not defined"<<endl;
+        return 0;
+    }
+
     Word2Vec model(argv[1]);
     model.TrainModel();
     cout<<"Constructing the embedding table..."<<endl;
